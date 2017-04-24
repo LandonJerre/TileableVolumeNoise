@@ -4,6 +4,10 @@
 #include <time.h>
 #include <math.h>
 
+//Must be before libtarga, libtarga's "internal" defines override glm types, making the whole thing not compile
+#include <gli/gli.hpp>
+#include <gli/generate_mipmaps.hpp>
+
 #include "./TileableVolumeNoise.h"
 #include "./libtarga.h"
 
@@ -17,6 +21,15 @@ void writeTGA(const char* fileName, int width, int height, /*const*/ unsigned ch
 		printf("Failed to write image!\n");
 		printf(tga_error_string(tga_get_last_error()));
 	}
+}
+
+void writeDDS(const char* fileName, int width, int height, int depth, /*const*/ unsigned char* data)
+{
+	gli::texture3d Texture(gli::format::FORMAT_RGBA8_UNORM_PACK8, gli::extent3d(width, height, depth));
+	//I'm not a 100% sure that this is an intended usage of the data() function, but it works, and by looking at the library code it should perfectly function.
+	memcpy(Texture.data(), data, sizeof(unsigned char) * 4 * width * height * depth);
+	gli::generate_mipmaps(Texture, gli::filter::FILTER_LINEAR);
+	gli::save_dds(Texture, fileName);
 }
 
 // the remap function used in the shaders as described in Gpu Pro 7. It must match when using pre packed textures
@@ -173,10 +186,13 @@ int main (int argc, char *argv[])
 	}
 	); // end parallel_for
 	{
-		int width = cloudBaseShapeTextureSize*cloudBaseShapeTextureSize;
-		int height = cloudBaseShapeTextureSize;
-		writeTGA("noiseShape.tga",       width, height, cloudBaseShapeTexels);
-		writeTGA("noiseShapePacked.tga", width, height, cloudBaseShapeTexelsPacked);
+		//int width = cloudBaseShapeTextureSize*cloudBaseShapeTextureSize;
+		//int height = cloudBaseShapeTextureSize;
+		//writeTGA("noiseShape.tga",       width, height, cloudBaseShapeTexels);
+		//writeTGA("noiseShapePacked.tga", width, height, cloudBaseShapeTexelsPacked);
+
+		writeDDS("noiseShape.dds", cloudBaseShapeTextureSize, cloudBaseShapeTextureSize, cloudBaseShapeTextureSize, cloudBaseShapeTexels);
+		writeDDS("noiseShapePacked.dds", cloudBaseShapeTextureSize, cloudBaseShapeTextureSize, cloudBaseShapeTextureSize, cloudBaseShapeTexelsPacked);
 	}
 	free(cloudBaseShapeTexels);
 	free(cloudBaseShapeTexelsPacked);
@@ -241,10 +257,13 @@ int main (int argc, char *argv[])
 	}
 	); // end parallel_for
 	{
-		int width = cloudErosionTextureSize*cloudErosionTextureSize;
-		int height = cloudErosionTextureSize;
-		writeTGA("noiseErosion.tga",       width, height, cloudErosionTexels);
-		writeTGA("noiseErosionPacked.tga", width, height, cloudErosionTexelsPacked);
+		//int width = cloudErosionTextureSize*cloudErosionTextureSize;
+		//int height = cloudErosionTextureSize;
+		//writeTGA("noiseErosion.tga",       width, height, cloudErosionTexels);
+		//writeTGA("noiseErosionPacked.tga", width, height, cloudErosionTexelsPacked);
+		
+		writeDDS("noiseErosion.dds", cloudErosionTextureSize, cloudErosionTextureSize, cloudErosionTextureSize, cloudErosionTexels);
+		writeDDS("noiseErosionPacked.dds", cloudErosionTextureSize, cloudErosionTextureSize, cloudErosionTextureSize, cloudErosionTexelsPacked);
 	}
 	free(cloudErosionTexels);
 

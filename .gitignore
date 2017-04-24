@@ -6,3 +6,10 @@ debug
 *.db
 *.png
 *.opendb
+*.dds
+*.exe
+*.opensdf
+*.pdb
+*.sdf
+*.suo
+*.user
