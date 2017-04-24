@@ -77,6 +77,7 @@
     <ClInclude Include="glm\vector_relational.hpp">
       <Filter>GLM</Filter>
     </ClInclude>
+    <ClInclude Include="NoiseKernel.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="GLM">
