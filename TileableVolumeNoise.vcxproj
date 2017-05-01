@@ -11,36 +11,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CurlNoise2D.cpp" />
     <ClCompile Include="TileableVolumeNoise.cpp" />
     <ClCompile Include="libtarga.c" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CurlNoise2D.h" />
     <ClInclude Include="NoiseKernel.h" />
     <ClInclude Include="TileableVolumeNoise.h" />
-    <ClInclude Include="glm\common.hpp" />
-    <ClInclude Include="glm\exponential.hpp" />
-    <ClInclude Include="glm\ext.hpp" />
-    <ClInclude Include="glm\fwd.hpp" />
-    <ClInclude Include="glm\geometric.hpp" />
-    <ClInclude Include="glm\glm.hpp" />
-    <ClInclude Include="glm\integer.hpp" />
-    <ClInclude Include="glm\mat2x2.hpp" />
-    <ClInclude Include="glm\mat2x3.hpp" />
-    <ClInclude Include="glm\mat2x4.hpp" />
-    <ClInclude Include="glm\mat3x2.hpp" />
-    <ClInclude Include="glm\mat3x3.hpp" />
-    <ClInclude Include="glm\mat3x4.hpp" />
-    <ClInclude Include="glm\mat4x2.hpp" />
-    <ClInclude Include="glm\mat4x3.hpp" />
-    <ClInclude Include="glm\mat4x4.hpp" />
-    <ClInclude Include="glm\matrix.hpp" />
-    <ClInclude Include="glm\packing.hpp" />
-    <ClInclude Include="glm\trigonometric.hpp" />
-    <ClInclude Include="glm\vec2.hpp" />
-    <ClInclude Include="glm\vec3.hpp" />
-    <ClInclude Include="glm\vec4.hpp" />
-    <ClInclude Include="glm\vector_relational.hpp" />
     <ClInclude Include="libtarga.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -111,11 +90,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <EmbedManifest>false</EmbedManifest>
-    <IncludePath>F:\TileableVolumeNoise\gli;F:\TileableVolumeNoise\gli\external;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)gli;$(SolutionDir)gli\external;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
     <EmbedManifest>false</EmbedManifest>
-    <IncludePath>F:\TileableVolumeNoise\gli;F:\TileableVolumeNoise\gli\external;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)gli;$(SolutionDir)gli\external;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

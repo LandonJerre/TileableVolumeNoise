@@ -8,6 +8,7 @@
 #include <gli/gli.hpp>
 #include <gli/generate_mipmaps.hpp>
 
+#include "CurlNoise2D.h"
 #include "./TileableVolumeNoise.h"
 #include "./libtarga.h"
 
@@ -38,6 +39,24 @@ void writeDDSMonochrome(const char* fileName, int width, int height, int depth, 
 	gli::texture3d Texture(gli::format::FORMAT_R8_UNORM_PACK8, gli::extent3d(width, height, depth));
 	//I'm not a 100% sure that this is an intended usage of the data() function, but it works, and by looking at the library code it should perfectly function.
 	memcpy(Texture.data(), data, sizeof(unsigned char) * width * height * depth);
+	gli::generate_mipmaps(Texture, gli::filter::FILTER_LINEAR);
+	gli::save_dds(Texture, fileName);
+}
+
+void writeDDS2D(const char* fileName, int width, int height, /*const*/ unsigned char* data)
+{
+	gli::texture2d Texture(gli::format::FORMAT_RGBA8_UNORM_PACK8, gli::extent2d(width, height));
+	//I'm not a 100% sure that this is an intended usage of the data() function, but it works, and by looking at the library code it should perfectly function.
+	memcpy(Texture.data(), data, sizeof(unsigned char) * 4 * width * height);
+	gli::generate_mipmaps(Texture, gli::filter::FILTER_LINEAR);
+	gli::save_dds(Texture, fileName);
+}
+
+void writeDDSMonochrome2D(const char* fileName, int width, int height, /*const*/ unsigned char* data)
+{
+	gli::texture2d Texture(gli::format::FORMAT_R8_UNORM_PACK8, gli::extent2d(width, height));
+	//I'm not a 100% sure that this is an intended usage of the data() function, but it works, and by looking at the library code it should perfectly function.
+	memcpy(Texture.data(), data, sizeof(unsigned char) * width * height);
 	gli::generate_mipmaps(Texture, gli::filter::FILTER_LINEAR);
 	gli::save_dds(Texture, fileName);
 }
@@ -276,6 +295,30 @@ void WorleyNoiseExample()
 	perlinKernel.RunKernel(gWorleyNoiseTextureSize, gWorleyNoiseTextureSize, gWorleyNoiseTextureSize);
 }
 
+void GenerateCurlNoise2D()
+{
+	unsigned int curlNoiseTextureSize = 256;
+	const glm::vec3 normFact = glm::vec3(1.0f / float(curlNoiseTextureSize));
+	const glm::vec3 scaleFact = glm::vec3(32);
+	NoiseKernel cloudErosion([&](unsigned int s, unsigned int t, unsigned int r, unsigned char& red, unsigned char& green, unsigned char& blue, unsigned char& alpha)
+	{
+		glm::vec3 coord = glm::vec3(s, t, r) * normFact * scaleFact;
+
+		glm::vec3 value = CurlNoise2D::curlNoise(coord);
+
+		red = unsigned char(255.0f * value.r);
+		green = unsigned char(255.0f * value.g);
+		blue = unsigned char(255.0f * value.b);
+		alpha = unsigned char(255.0f);
+	});
+
+	auto curlNoiseTexels = cloudErosion.RunKernel(curlNoiseTextureSize, curlNoiseTextureSize, 1, true);
+
+	{
+		writeDDS2D("curlNoise.dds", curlNoiseTextureSize, curlNoiseTextureSize, curlNoiseTexels.get());
+	}
+}
+
 int main (int argc, char *argv[])
 {   
 	//PerlinNoiseExample();
@@ -286,6 +329,7 @@ int main (int argc, char *argv[])
 	//
 	GenerateCloudBaseShapeNoisePacked();
 	GenerateCloudErosionPacked();
+	GenerateCurlNoise2D();
 
     return 0;
 }

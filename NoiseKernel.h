@@ -12,24 +12,41 @@ public:
 	{		
 	}
 
-	std::unique_ptr<unsigned char[]> RunKernel(unsigned int width, unsigned int height, unsigned int depth)
+	std::unique_ptr<unsigned char[]> RunKernel(unsigned int width, unsigned int height, unsigned int depth, bool _2Donly = false)
 	{
+		if (_2Donly)
+			depth = 1;
 		std::unique_ptr<unsigned char[]> resultBuffer(new unsigned char[width * height * depth * 4]);
 
 		if (KernelFunction)
 		{
-			Concurrency::parallel_for(int(0), int(width), [&](int s)
+			if (_2Donly)
 			{
-				for (unsigned int t = 0; t < height; t++)
+				Concurrency::parallel_for(int(0), int(width), [&](int s)
 				{
-					for (unsigned int r = 0; r < depth; r++)
+					for (unsigned int t = 0; t < height; t++)
 					{
-						int addr = r*width*height + t*depth + s;
+						int addr = t*height + s;
 						addr *= 4;
-						KernelFunction(s, t, r, resultBuffer[addr], resultBuffer[addr + 1], resultBuffer[addr + 2], resultBuffer[addr + 3]);
+						KernelFunction(s, t, 0, resultBuffer[addr], resultBuffer[addr + 1], resultBuffer[addr + 2], resultBuffer[addr + 3]);
 					}
-				}
-			});
+				});
+			}
+			else
+			{
+				Concurrency::parallel_for(int(0), int(width), [&](int s)
+				{
+					for (unsigned int t = 0; t < height; t++)
+					{
+						for (unsigned int r = 0; r < depth; r++)
+						{
+							int addr = r*width*height + t*depth + s;
+							addr *= 4;
+							KernelFunction(s, t, r, resultBuffer[addr], resultBuffer[addr + 1], resultBuffer[addr + 2], resultBuffer[addr + 3]);
+						}
+					}
+				});
+			}
 		}
 
 		return resultBuffer;
@@ -45,23 +62,39 @@ public:
 	{
 	}
 
-	std::unique_ptr<unsigned char[]> RunKernel(unsigned int width, unsigned int height, unsigned int depth)
+	std::unique_ptr<unsigned char[]> RunKernel(unsigned int width, unsigned int height, unsigned int depth, bool _2Donly = false)
 	{
+		if (_2Donly)
+			depth = 1;
 		std::unique_ptr<unsigned char[]> resultBuffer(new unsigned char[width * height * depth]);
 
 		if (KernelFunction)
 		{
-			Concurrency::parallel_for(int(0), int(width), [&](int s)
+			if (_2Donly)
 			{
-				for (unsigned int t = 0; t < height; t++)
+				Concurrency::parallel_for(int(0), int(width), [&](int s)
 				{
-					for (unsigned int r = 0; r < depth; r++)
+					for (unsigned int t = 0; t < height; t++)
 					{
-						int addr = r*width*height + t*depth + s;
-						KernelFunction(s, t, r, resultBuffer[addr]);
+						int addr = t*height + s;
+						KernelFunction(s, t, 0, resultBuffer[addr]);
 					}
-				}
-			});
+				});
+			}
+			else
+			{
+				Concurrency::parallel_for(int(0), int(width), [&](int s)
+				{
+					for (unsigned int t = 0; t < height; t++)
+					{
+						for (unsigned int r = 0; r < depth; r++)
+						{
+							int addr = r*width*height + t*depth + s;
+							KernelFunction(s, t, r, resultBuffer[addr]);
+						}
+					}
+				});
+			}
 		}
 
 		return resultBuffer;
