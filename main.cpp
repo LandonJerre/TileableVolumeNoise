@@ -299,12 +299,13 @@ void GenerateCurlNoise2D()
 {
 	unsigned int curlNoiseTextureSize = 256;
 	const glm::vec3 normFact = glm::vec3(1.0f / float(curlNoiseTextureSize));
-	const glm::vec3 scaleFact = glm::vec3(32);
+	const glm::vec3 scaleFact = glm::vec3(16);
 	NoiseKernel cloudErosion([&](unsigned int s, unsigned int t, unsigned int r, unsigned char& red, unsigned char& green, unsigned char& blue, unsigned char& alpha)
 	{
 		glm::vec3 coord = glm::vec3(s, t, r) * normFact * scaleFact;
 
 		glm::vec3 value = CurlNoise2D::curlNoise(coord);
+		value = (value + 1.0f) / 2.0f; //noise values are in [-1,1] range; packed to [0,1] range. Alternatively saving could be changed to use snorm instead of unorm.
 
 		red = unsigned char(255.0f * value.r);
 		green = unsigned char(255.0f * value.g);
