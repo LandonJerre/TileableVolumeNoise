@@ -26,7 +26,7 @@ public:
 				{
 					for (unsigned int t = 0; t < height; t++)
 					{
-						int addr = t*height + s;
+						int addr = t*width + s;
 						addr *= 4;
 						KernelFunction(s, t, 0, resultBuffer[addr], resultBuffer[addr + 1], resultBuffer[addr + 2], resultBuffer[addr + 3]);
 					}
@@ -76,7 +76,7 @@ public:
 				{
 					for (unsigned int t = 0; t < height; t++)
 					{
-						int addr = t*height + s;
+						int addr = t*width + s;
 						KernelFunction(s, t, 0, resultBuffer[addr]);
 					}
 				});
